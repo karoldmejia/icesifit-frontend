@@ -15,21 +15,22 @@ body{
 }
 
 h1{
-    margin-bottom: 5vh;
-    text-align: center;
-    line-height: 0.5;
+    margin-bottom: 5vh !important;
+    text-align: center !important;
+    line-height: 1 !important;
     font-size: 40px !important;
+    color: var(--negro) !important;
 }
 
 .container{
-    background-color: var(--blanco);
-    border-radius: 20px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
-    position: relative;
-    overflow: hidden;
-    width: 1000px;
-    max-width: 100%;
-    min-height: 650px;
+    background-color: var(--blanco) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    width: 1000px !important;
+    max-width: 100% !important;
+    min-height: 650px !important;
 }
 
 .container p{

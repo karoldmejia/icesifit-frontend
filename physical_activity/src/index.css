@@ -4,19 +4,6 @@
 @tailwind utilities;
 
 :root {
-    --verde: #4cb979;
-    --blanco: #FAFAFA;
-    --negro: #1A1A1A;
-    --gris: #DBDBDB;
-}
-
-body {
-    font-family: "DM Sans", sans-serif;
-    color: var(--blanco);
-    background: var(--negro) ;
-}
-
-:root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
@@ -83,6 +70,18 @@ body {
     }
 }
 
+:root {
+    --verde: #4cb979;
+    --blanco: #FAFAFA;
+    --negro: #1A1A1A;
+    --gris: #DBDBDB;
+}
+
+body {
+    font-family: "DM Sans", sans-serif;
+    color: var(--blanco);
+    background: var(--negro) ;
+}
 
 .iconos {
     stroke: var(--blanco);       /* usar stroke en vez de color */

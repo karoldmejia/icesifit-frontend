@@ -7,9 +7,21 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.jsx";
 import { User, Bell, MessageCircle, Dumbbell, CalendarRange} from "lucide-react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../features/userSlice";
+
 
 export default function Navbar() {
+
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const handleLogout = () => {
+        dispatch(logout());
+        localStorage.removeItem("token");
+        navigate("/auth");
+    };
 
     return (
         <div className="topbar">
@@ -38,7 +50,9 @@ export default function Navbar() {
                         <DropdownMenuItem className="perfil-item">Perfil</DropdownMenuItem>
                         <DropdownMenuItem className="perfil-item">Facturación</DropdownMenuItem>
                         <DropdownMenuItem className="perfil-item">Equipo</DropdownMenuItem>
-                        <DropdownMenuItem className="perfil-item">Suscripción</DropdownMenuItem>
+                        <DropdownMenuItem className="perfil-item" onClick={handleLogout}>
+                            Salir
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
 

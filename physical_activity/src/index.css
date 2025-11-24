@@ -75,6 +75,7 @@
     --blanco: #FAFAFA;
     --negro: #1A1A1A;
     --gris: #DBDBDB;
+    --gtafito: #374151;
 }
 
 body {
@@ -97,3 +98,10 @@ body {
     transform: scale(1.05);       /* agranda un 10% */
 }
 
+.scrollbar-none::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+.scrollbar-none {
+    -ms-overflow-style: none;  /* IE y Edge */
+    scrollbar-width: none;     /* Firefox */
+}

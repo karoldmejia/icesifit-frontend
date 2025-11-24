@@ -5,7 +5,8 @@ import { BrowserRouter } from "react-router-dom";
 import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
-import { store, persistor } from "./features/store";
+import store, { persistor } from "./features/store"
+
 
 import App from "./App.jsx";
 import "./index.css";
@@ -28,7 +29,6 @@ function DebugApp() {
 const root = createRoot(document.getElementById("root"));
 
 root.render(
-    <StrictMode>
         <Provider store={store}>
             <PersistGate
                 loading={<div>Loading persisted state...</div>}
@@ -37,5 +37,4 @@ root.render(
                 <DebugApp />
             </PersistGate>
         </Provider>
-    </StrictMode>
 );

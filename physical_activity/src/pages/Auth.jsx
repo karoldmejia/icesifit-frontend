@@ -122,8 +122,15 @@ export default function Auth() {
                 const decoded = jwtDecode(data.accessToken);
                 dispatch(setUserData({
                     token: data.accessToken,
+
                     role: decoded.authorities[0]
                 }));
+                const token = useSelector(state => state.user.token);
+
+                useEffect(() => {
+                    console.log(typeof token);
+                }, [token]);
+
                 navigate("/home");
 
             } else {

@@ -1,12 +1,12 @@
-const Modal = ({ isOpen, onClose, children }) => {
+const Modal = ({ isOpen, onClose, children, bgColor = "white" }) => {
     if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             {/* Contenedor del modal */}
             <div
-                className="bg-white rounded-lg shadow-lg h-[600px] max-h-[90vh] p-6 pt-10 relative flex flex-col inline-block max-w-[90vw]"
-                style={{ minWidth: "300px" }} // opcional: ancho mínimo para pantallas muy pequeñas
+                className="rounded-lg shadow-lg h-[600px] max-h-[90vh] p-6 pt-10 relative flex flex-col inline-block max-w-[90vw]"
+                style={{ minWidth: "900px", backgroundColor: bgColor }}
             >
                 {/* Botón de cerrar */}
                 <button

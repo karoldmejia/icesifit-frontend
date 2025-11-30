@@ -9,6 +9,7 @@ import {
 } from "recharts";
 
 export default function WeeklyRoutineChart({ data }) {
+    console.log(data)
     return (
         <div className="w-full h-64 bg-transparent rounded-lg">
             <h3 className="text-base mb-3">Tu actividad en la última semana</h3>
@@ -16,7 +17,8 @@ export default function WeeklyRoutineChart({ data }) {
             <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                     data={data}
-                    margin={{ top: 0, right: 10, left: 0, bottom: 0 }} // margen a la izquierda = 0
+                    margin={{ top: 0, right: 0, left: 0, bottom: 0 }}  // margen a la izquierda = 0
+
                 >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
@@ -26,7 +28,7 @@ export default function WeeklyRoutineChart({ data }) {
                     />
                     <YAxis
                         allowDecimals={false}
-                        width={30}
+                        width={10}
                     />
                     <Tooltip />
                     <Line

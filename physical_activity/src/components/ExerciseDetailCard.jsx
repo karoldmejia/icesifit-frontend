@@ -35,7 +35,7 @@ export default function ExerciseDetailCard({ exercise }) {
             </div>
 
             {/* Filas con series, repeticiones y tiempo */}
-            <div className="flex flex-col">
+            <div className="flex-1 flex-col">
                 {rows.map((row, idx) => (
                     <ExerciseRow
                         key={idx}

@@ -120,9 +120,10 @@ export default function Auth() {
             const data = await response.json();
             if (response.ok) {
                 const decoded = jwtDecode(data.accessToken);
+                console.log(decoded.id)
                 dispatch(setUserData({
                     token: data.accessToken,
-
+                    id: decoded.id,
                     role: decoded.authorities[0]
                 }));
                 const token = useSelector(state => state.user.token);

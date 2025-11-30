@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import UserBadge from "../components/UserBagde.jsx";
 import SummaryExercise from "../components/SummaryExercise";
-import { fetchWeeklyProgress } from "../services/progressServices.js";
-import WeeklyRoutineChart from "../components/Charts/WeeklyRoutineChart.jsx";
+import {fetchWeeklyProgress, fetchWeeklyProgressByRoutine} from "../services/progressServices.js";
 import {
     fetchRoutineExercisesByRoutine,
     fetchExerciseById,
@@ -13,6 +12,13 @@ import ExerciseDetailCard from "@/components/ExerciseDetailCard.jsx";
 import IconTextButton from "@/components/IconTextButton.jsx";
 import IconButton from "@/components/IconButton.jsx";
 import { Settings2, Trash2 } from "lucide-react";
+import {deleteUserRoutine} from "@/services/userRoutineServices.js";
+import {deleteRoutine} from "@/services/routineServices.js";
+import ConfirmationCard from "@/components/ConfirmationCard.jsx";
+import WeeklyRoutineChartWithFilters from "@/components/Charts/WeeklyRoutineChartWithFilters.jsx";
+import UsersCountBarChart from "@/components/Charts/UsersCountBarChart.jsx";
+import { fetchUsersCountByRoutineDaily } from "../services/progressServices.js";
+
 
 const msToPretty = (seconds) => {
     if (!seconds) return "0s";
@@ -22,32 +28,34 @@ const msToPretty = (seconds) => {
     return `${mins}m ${secs}s`;
 };
 
-const transformToWeek = (progressArray) => {
-    const days = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
-
-    const last7 = [...Array(7)].map((_, i) => {
-        const d = new Date();
-        d.setDate(d.getDate() - (6 - i));
-
-        const dayKey = d.toISOString().split("T")[0];
-
-        const found = progressArray.find(p => p.date === dayKey);
-
-        return {
-            day: days[d.getDay()],
-            count: found?.count || 0
-        };
-    });
-
-    return last7;
-};
-
-export default function RoutineDetails({ routine, userRoutineId, onEdit }) {
+export default function RoutineDetails({ routine, userRoutineId, onEdit, onDeleted }) {
     const token = useSelector(state => state.user.token);
     const [routineExercises, setRoutineExercises] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [weeklyData, setWeeklyData] = useState([]);
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const [usersCountData, setUsersCountData] = useState([]);
+    const userRole = useSelector(state => state.user.role);
+
+    useEffect(() => {
+        if (!routine?.routineId) return;
+
+        const today = new Date();
+        const lastWeek = new Date();
+        lastWeek.setDate(today.getDate() - 6);
+        const startDate = lastWeek.toISOString().split("T")[0];
+
+        fetchUsersCountByRoutineDaily(routine.routineId, token)
+            .then(data => {
+                // Filtramos solo últimos 7 días
+                const filtered = data.filter(d => d.date >= startDate);
+                setUsersCountData(filtered);
+            })
+            .catch(err => console.error("Error fetching users count:", err));
+    }, [routine?.routineId, token]);
+
 
     useEffect(() => {
         if (!routine?.routineId) return;
@@ -98,25 +106,91 @@ export default function RoutineDetails({ routine, userRoutineId, onEdit }) {
 
 
     useEffect(() => {
-        if (!routine?.id) return;
+        const targetId = userRoutineId ?? routine?.routineId;
+
+        if (!targetId) {
+            console.warn("No se ejecuta fetchWeeklyProgress porque no hay ID disponible");
+            return;
+        }
 
         const today = new Date();
         const lastWeek = new Date();
         lastWeek.setDate(today.getDate() - 6);
 
         const startDate = lastWeek.toISOString().split("T")[0];
-
-        fetchWeeklyProgress(routine.id, startDate, token)
+        // Se usa el targetId (prioridad al userRoutineId)
+        fetchWeeklyProgressByRoutine(targetId, startDate, token)
             .then((data) => {
-                // transformamos la data al formato del gráfico
-                const formatted = transformToWeek(data);
-                setWeeklyData(formatted);
+                const formatted = data.map(p => ({
+                    rawDate: p.progressDate,
+                    setsCompleted: p.setsCompleted,
+                    repsCompleted: p.repsCompleted,
+                    timeCompleted: p.timeCompleted
+                }));
+
+                const grouped = formatted.reduce((acc, curr) => {
+                    const date = curr.rawDate;
+
+                    if (!acc[date]) {
+                        acc[date] = {
+                            rawDate: date,
+                            setsCompleted: 0,
+                            repsCompleted: 0,
+                            timeCompleted: 0
+                        };
+                    }
+
+                    acc[date].setsCompleted += curr.setsCompleted || 0;
+                    acc[date].repsCompleted += curr.repsCompleted || 0;
+                    acc[date].timeCompleted += curr.timeCompleted || 0;
+
+                    return acc;
+                }, {});
+
+                // Convertimos objeto → array antes de guardar
+                setWeeklyData(Object.values(grouped));
             })
-            .catch(err => console.error(err));
-    }, [routine?.id, token]);
+            .catch(err => console.error("Error al consultar progreso semanal:", err));
+
+    }, [routine?.routineId, userRoutineId, token]);
+
+
+    if (!usersCountData) {
+        return (
+            <div className="w-full h-72 flex items-center justify-center text-gray-400 text-sm">
+                Ningún usuario ha implementado esta rutina.
+            </div>
+        );
+    }
+
+    const confirmDeleteRoutine = async () => {
+        if (!routine?.routineId) return;
+
+        setDeleting(true);
+
+        try {
+            // Si es una rutina de usuario, usar deleteUserRoutine
+            if (userRoutineId) {
+                await deleteUserRoutine(userRoutineId, token);
+            } else {
+                // Si es una rutina base, usar deleteRoutine
+                await deleteRoutine(routine.routineId, token);
+            }
+
+            // Llamamos callback de padre para refrescar lista o manejar eliminación
+            onDeleted?.();
+
+            setShowConfirm(false);
+        } catch (err) {
+            console.error("Error eliminando rutina:", err);
+        } finally {
+            setDeleting(false);
+        }
+    };
+
 
     return (
-        <div className="flex w-full h-full">
+        <div className="flex-1 w-full h-full">
             {/* LADO DERECHO */}
             <div className="bg-white p-6 flex flex-col gap-6 relative items-start" style={{ color: "var(--negro)" }}>
                 <UserBadge userName={routine.userName} certified={routine.certified} />
@@ -154,37 +228,55 @@ export default function RoutineDetails({ routine, userRoutineId, onEdit }) {
                         )}
                     </div>
                 )}
-                <div className="w-full mt-6">
-                    <WeeklyRoutineChart data={weeklyData.length > 0 ? weeklyData : [
-                        { day: "Dom", count: 0 },
-                        { day: "Lun", count: 0 },
-                        { day: "Mar", count: 0 },
-                        { day: "Mié", count: 0 },
-                        { day: "Jue", count: 0 },
-                        { day: "Vie", count: 0 },
-                        { day: "Sáb", count: 0 }
-                    ]} />
+                <div className="w-full h-full mt-6">
+                    {userRoutineId ? (
+                        // Si es una rutina de usuario, mostramos progreso semanal
+                        (!weeklyData || weeklyData.length === 0) ? (
+                            <div className="w-full h-72 flex items-center justify-center text-gray-400 text-sm">
+                                No se ha registrado progreso en esta rutina
+                            </div>
+                        ) : (
+                            <WeeklyRoutineChartWithFilters data={weeklyData} />
+                        )
+                    ) : (
+                        // Si es una rutina base
+                        (!usersCountData || usersCountData.length === 0) ? (
+                            <div className="w-full h-72 flex items-center justify-center text-gray-400 text-sm">
+                                Ningún usuario ha implementado esta rutina.
+                            </div>
+                        ) : (
+                            <UsersCountBarChart data={usersCountData} />
+                        )
+                    )}
                 </div>
+
                 <div className="flex items-center gap-3 mt-8 mb-0 w-full">
                     {/* Span alineado a la izquierda */}
                     <span className="text-sm ml-5 mr-auto text-gray-400">
-                    Ejercicios
-                  </span>
-
-                    {/* Botones alineados a la derecha */}
-                    <IconTextButton
-                        icon={Settings2}
-                        text="Editar rutina"
-                        onClick={onEdit}
-                    />
-                    <IconButton
-                        icon={Trash2}
-                        onClick={() => console.log("Eliminar rutina")}
-                    />
+                        Ejercicios
+                    </span>
+                    {!(userRole === "ROLE_User" && routine.certified) && (
+                        <>
+                            <IconTextButton
+                                icon={Settings2}
+                                text="Editar rutina"
+                                onClick={onEdit}
+                            />
+                            <IconButton
+                                icon={Trash2}
+                                onClick={() => setShowConfirm(true)}
+                            />
+                        </>
+                    )}
                 </div>
 
                 <div className="flex flex-col gap-4 w-full">
-                    {routineExercises.map((re) => (
+                    {routineExercises.length === 0 ? (
+                            <p className="text-center text-gray-400 mt-4 text-sm">
+                                No hay ejercicios en esta rutina
+                            </p>
+                    ) : (
+                    routineExercises.map((re) => (
                         <ExerciseDetailCard
                             key={re.id}
                             exercise={{
@@ -195,9 +287,22 @@ export default function RoutineDetails({ routine, userRoutineId, onEdit }) {
                                 ]
                             }}
                         />
-                    ))}
+                    ))
+                    )}
                 </div>
             </div>
+            {showConfirm && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+                    <ConfirmationCard
+                        title="¿Eliminar rutina?"
+                        description="Esta acción no se puede deshacer."
+                        onDeactivate={confirmDeleteRoutine}
+                        onCancel={() => setShowConfirm(false)}
+                    />
+
+                </div>
+            )}
+
         </div>
     );
 }

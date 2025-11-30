@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { fetchExercises } from "@/services/exerciseServices.js";
+import RoutineExerciseRow from "@/components/RoutineExerciseRow.jsx";
 
-export default function ExercisePicker({ selectedExercises, setSelectedExercises }) {
+export default function ExercisePicker({ selectedExercises, setSelectedExercises, onSelectExercise }) {
     const token = useSelector(state => state.user.token);
     const [exercises, setExercises] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -14,7 +15,14 @@ export default function ExercisePicker({ selectedExercises, setSelectedExercises
         fetchExercises(token)
             .then(data => {
                 if (!mounted) return;
-                setExercises(data);
+
+                // Agregamos media = ex.videoUrl
+                const withMedia = data.map(ex => ({
+                    ...ex,
+                    media: ex.videoUrl || null
+                }));
+
+                setExercises(withMedia);
             })
             .catch(err => {
                 if (!mounted) return;
@@ -43,19 +51,20 @@ export default function ExercisePicker({ selectedExercises, setSelectedExercises
 
     return (
         <div className="h-full overflow-y-auto p-4">
-            <h3 className="text-xl font-bold mb-4">Selecciona ejercicios</h3>
-            <ul className="flex flex-col gap-2">
-                {exercises.map(ex => (
-                    <li
-                        key={ex.id}
-                        className={`p-2 rounded border cursor-pointer ${
-                            selectedExercises.find(e => e.id === ex.id) ? "bg-blue-200" : "bg-white"
-                        }`}
-                        onClick={() => toggleExercise(ex)}
-                    >
-                        {ex.name}
-                    </li>
-                ))}
+            <span className="text-sm mb-5 mr-auto text-gray-400">Ejercicios disponibles</span>
+            <ul className="flex mt-3 flex-col gap-2">
+                {exercises.map(ex => {
+                    const isSelected = selectedExercises.some(e => e.id === ex.id);
+                    return (
+                        <RoutineExerciseRow
+                            key={ex.id}
+                            exercise={ex}
+                            selected={isSelected}
+                            onClick={() => toggleExercise(ex)}
+                            disableHover={true}
+                        />
+                    );
+                })}
             </ul>
         </div>
     );

@@ -2,12 +2,12 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function SplitLayout({ left, right, showLeft }) {
     return (
-        <div className="flex w-full h-full">
+        <div className="flex w-full">
             {/* LADO IZQUIERDO */}
             <AnimatePresence>
                 {showLeft && (
                     <motion.div
-                        className="w-2/6 bg-gray-100 p-4 rounded-l-lg"
+                        className="w-2/6 p-2 rounded-l-lg"
                         initial={{ x: -300, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: -300, opacity: 0 }}
@@ -18,10 +18,11 @@ export default function SplitLayout({ left, right, showLeft }) {
                 )}
             </AnimatePresence>
 
+            <div className="w-[1px] ml-5 bg-gray-200" />
+
             {/* LADO DERECHO */}
             <div
-                className={`p-6 flex flex-col gap-6 relative items-start bg-white transition-all duration-500`}
-                style={{ width: showLeft ? "66.666%" : "100%" }}
+                className={`p-6 flex-1 flex-col relative items-start bg-white transition-all duration-500`}
             >
                 {right}
             </div>

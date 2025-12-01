@@ -1,3 +1,5 @@
+import React from "react";
+
 import "../styles/topbar.css";
 import {
     DropdownMenu,
@@ -37,7 +39,9 @@ export default function Navbar() {
                     className="iconos"
                     onClick={() => navigate("/routines")}
                 />
-                <CalendarRange className="iconos" />
+                <CalendarRange className="iconos"
+                               onClick={() => navigate("/spaces")}
+                />
                 <h2></h2>
                 <DropdownMenu className="perfil">
                     <DropdownMenuTrigger className="perfil-trigger">
@@ -48,16 +52,12 @@ export default function Navbar() {
                         <DropdownMenuLabel className="perfil-label">Mi Cuenta</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="perfil-item">Perfil</DropdownMenuItem>
-                        <DropdownMenuItem className="perfil-item">Facturación</DropdownMenuItem>
-                        <DropdownMenuItem className="perfil-item">Equipo</DropdownMenuItem>
+                        <DropdownMenuItem className="perfil-item">Configuración</DropdownMenuItem>
                         <DropdownMenuItem className="perfil-item" onClick={handleLogout}>
                             Salir
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
-
-                <Bell className="iconos" />
-                <MessageCircle className="iconos" />
 
             </div>
         </div>

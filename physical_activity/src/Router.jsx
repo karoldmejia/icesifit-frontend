@@ -1,3 +1,4 @@
+import React from "react";
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import Auth from "./pages/Auth";
 import Home from "./pages/Home";
@@ -5,6 +6,7 @@ import Routines from "./pages/Routines";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import Navbar from "./components/Navbar";
+import Spaces from "@/pages/Spaces.jsx";
 
 // Layout que incluye Navbar para rutas protegidas
 function ProtectedLayout() {
@@ -31,7 +33,7 @@ function PublicLayout() {
 const router = createBrowserRouter([
     {
         path: "/",
-        Component: () => <Navigate to="/auth" replace />,
+        Component: () => <Navigate to="/routines" replace />,
     },
     {
         path: "/auth",
@@ -44,6 +46,7 @@ const router = createBrowserRouter([
         children: [
             { path: "home", Component: Home },
             { path: "routines", Component: Routines },
+            { path: "spaces", Component: Spaces },
         ],
     },
 ], { basename: "/icesifit" });

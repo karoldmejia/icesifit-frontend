@@ -1,6 +1,7 @@
-import { StrictMode, useEffect } from "react";
+import React from "react";
+
+import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
 
 import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";

@@ -1,4 +1,7 @@
+import React from "react";
 import { User, UserCheck } from "lucide-react";
+import PropTypes from "prop-types";
+
 
 export default function UserBadge({ userName, certified }) {
     return (

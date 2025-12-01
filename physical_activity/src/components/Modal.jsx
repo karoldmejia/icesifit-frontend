@@ -1,3 +1,5 @@
+import React from "react";
+
 const Modal = ({ isOpen, onClose, children, bgColor = "white" }) => {
     if (!isOpen) return null;
 

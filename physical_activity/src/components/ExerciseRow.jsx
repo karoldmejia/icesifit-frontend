@@ -1,3 +1,5 @@
+import React from "react";
+
 export default function ExerciseRow({ setNumber, reps, time, showReps, showTime, rowIndex }) {
     const bgColor = rowIndex % 2 === 0 ? 'bg-white' : 'bg-[#f7f7f7]';
 

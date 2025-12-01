@@ -67,7 +67,17 @@
         background-color: hsl(var(--background));
         color: hsl(var(--foreground));
         font-family: "DM Sans", sans-serif;
+
+        /* --- Ocultar scroll --- */
+        scrollbar-width: none;     /* Firefox */
+        overflow-y: scroll;        /* Importante para que siga funcionando el scroll */
     }
+
+    /* Chrome, Safari, Edge */
+    body::-webkit-scrollbar {
+        display: none;
+    }
+
 }
 
 :root {
@@ -76,6 +86,8 @@
     --negro: #1A1A1A;
     --gris: #DBDBDB;
     --gtafito: #374151;
+    scrollbar-width: none;     /* Firefox */
+    overflow-y: scroll;
 }
 
 body {

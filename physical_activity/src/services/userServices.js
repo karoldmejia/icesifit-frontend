@@ -63,3 +63,19 @@ export async function deleteUser(id, token) {
     if (!res.ok) throw new Error("Error eliminando usuario");
     return res.text();
 }
+
+export async function fetchTrainers(token) {
+    const res = await fetch(`${BASE_URL}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    if (!res.ok) throw new Error('Error al cargar entrenadores');
+
+    const allUsers = await res.json();
+    // Filtrar solo entrenadores
+    return allUsers.filter(user =>
+        user.role?.name === "Trainer" || user.role?.name === "ROLE_Trainer"
+    );
+}

@@ -1,4 +1,7 @@
+import React from "react";
+
 import RoutineExerciseRow from "@/components/RoutineExerciseRow.jsx";
+import PropTypes from "prop-types";
 
 export default function RoutineExerciseList({ exercises, onSelectExercise }) {
     if (!exercises || exercises.length === 0) {
@@ -20,3 +23,17 @@ export default function RoutineExerciseList({ exercises, onSelectExercise }) {
         </div>
     );
 }
+RoutineExerciseList.propTypes = {
+    exercises: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.number.isRequired,
+            exerciseId: PropTypes.number,
+            name: PropTypes.string,
+            media: PropTypes.string,
+            sets: PropTypes.number,
+            reps: PropTypes.number,
+            time: PropTypes.number,
+        })
+    ).isRequired,
+    onSelectExercise: PropTypes.func,
+};

@@ -1,3 +1,5 @@
+import React from "react";
+
 import IconTextButton from "@/components/IconTextButton.jsx";
 import { CircleMinus, Plus, Minus } from "lucide-react";
 

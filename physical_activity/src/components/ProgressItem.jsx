@@ -1,4 +1,6 @@
-export function ProgressItem({ media, date, sets, reps, time }) {
+import React from "react";
+
+export function ProgressItem({ media, date, sets, reps, time, bgColor = "bg-gray-50", txColor = "text-gray-800" }) {
 
     const perSetReps = reps && sets > 0 ? Math.round(reps / sets) : 0;
     const perSetTime = time && sets > 0 ? Math.round(time / sets) : 0;
@@ -8,7 +10,7 @@ export function ProgressItem({ media, date, sets, reps, time }) {
     if (perSetTime > 0) text += ` × ${perSetTime}s`;
 
     return (
-        <div className="p-3 bg-gray-50 mb-2 rounded-md flex items-center gap-3">
+        <div className={`p-3 ${bgColor} mb-2 rounded-md flex items-center gap-3`}>
 
             {/* Imagen */}
             <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
@@ -24,7 +26,7 @@ export function ProgressItem({ media, date, sets, reps, time }) {
             {/* Info del progreso */}
             <div className="flex flex-col text-left leading-tight">
                 <span className="text-[9px] text-gray-400">{date}</span>
-                <span className="text-sm font-medium text-gray-800">{text}</span>
+                <span className={`text-sm font-medium ${txColor}`}>{text}</span>
             </div>
         </div>
     );

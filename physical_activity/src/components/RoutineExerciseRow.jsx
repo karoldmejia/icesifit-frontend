@@ -1,3 +1,5 @@
+import React from "react";
+
 import { CircleArrowOutUpRight } from "lucide-react";
 
 export default function RoutineExerciseRow({ exercise, onClick, selected, onDetails, disableHover = false }) {

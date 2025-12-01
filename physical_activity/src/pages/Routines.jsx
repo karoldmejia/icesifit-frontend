@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import { fetchRoutine, fetchRoutines } from "../services/routineServices";
 import {
@@ -12,12 +13,14 @@ import SearchBar from "../components/SearchBar";
 import Modal from "@/components/Modal.jsx";
 import RoutinesPage from "@/pages/RoutinesPage.jsx";
 import NotificationAlert from "@/components/NotificationAlert.jsx";
+import Tabs from "./Tabs.jsx";
 
 import { useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import CreateRoutineFromBase from "@/pages/CreateRoutineFromBase.jsx";
 import CreateRoutineEmpty from "@/pages/CreateRoutineEmpty.jsx";
-
+import ProgressPages from "@/pages/ProgressPages.jsx";
+import ProgressLayout from "@/pages/ProgressLayout.jsx";
 
 export default function Routines() {
     const token = useSelector(state => state.user.token);
@@ -31,8 +34,13 @@ export default function Routines() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedRoutine, setSelectedRoutine] = useState(null);
     const [alert, setAlert] = useState({ type: "", message: "", show: false });
-    const [isCreatingRoutine, setIsCreatingRoutine] = useState(false);
+    const [activeTab, setActiveTab] = useState("mis-rutinas"); // Estado para la pestaña activa
 
+    // Definir las pestañas
+    const tabs = [
+        { id: "mis-rutinas", label: "Mis rutinas" },
+        { id: "mi-rendimiento", label: "Mi rendimiento" }
+    ];
 
     function handleOpenModal(routine) {
         setSelectedRoutine(routine);
@@ -142,74 +150,99 @@ export default function Routines() {
     }
 
     return (
-        <div className="flex mt-20 flex-col w-[1200px] h-[1000px] mx-auto overflow-hidden">
+        <div className="flex pt-56 flex-col w-[1200px] h-[1000px] mx-auto scrollbar-hide">
             {/* Banner */}
-            <div className="w-full mt-20 h-64 overflow-hidden rounded-xl px-4 sm:px-8 lg:px-4">
+            <div className="w-full h-64 rounded-xl px-4 sm:px-8 lg:px-4">
                 <img src="/banner_exercises.jpg" alt="Banner" className="w-full h-full object-cover rounded-xl" style={{ objectPosition: "center 25%" }} />
             </div>
 
-            {/* Título y barra de búsqueda */}
-            <div className="flex flex-col mt-10 sm:flex-row sm:items-center justify-between mt-4 mb-4 px-4 gap-4">
-                <h2 className="text-2xl font-bold mb-2 sm:mb-0">Rutinas</h2>
-                <div className="flex-1 sm:flex-none sm:ml-auto flex items-center gap-2">
-                    {/* Botón crear rutina (solo si no es admin) */}
-                    {userRole === "ROLE_User" && (
-                        <CreateRoutineFromBase baseRoutines={filteredBaseRoutines}
-                                               setAlert={setAlert}
-                                               refreshRoutines={refreshRoutines}/>
+            {/* Componente de pestañas */}
+            <div className="px-4">
+                <Tabs
+                    tabs={tabs}
+                    activeTab={activeTab}
+                    onTabChange={setActiveTab}
+                >
+                    {/* Contenido de la primera pestaña - Mis Rutinas */}
+                    {activeTab === "mis-rutinas" && (
+                        <div className="space-y-8">
+                            {/* Rutinas de usuario */}
+                            {/* Título y barra de búsqueda */}
+                            <div className="flex flex-col mt-10 sm:flex-row sm:items-center justify-between mt-4 mb-4 gap-4">
+                                <h2 className="text-2xl font-bold mb-2 sm:mb-0">Rutinas</h2>
+                                <div className="flex-1 sm:flex-none sm:ml-auto flex items-center gap-2">
+                                    {/* Botón crear rutina (solo si no es admin) */}
+                                    {userRole === "ROLE_User" && (
+                                        <CreateRoutineFromBase
+                                            baseRoutines={filteredBaseRoutines}
+                                            setAlert={setAlert}
+                                            refreshRoutines={refreshRoutines}
+                                        />
+                                    )}
+                                    {userRole === "ROLE_Trainer" && (
+                                        <CreateRoutineEmpty
+                                            setAlert={setAlert}
+                                            refreshRoutines={refreshRoutines}
+                                        />
+                                    )}
+
+                                    <SearchBar
+                                        value={search}
+                                        onChange={(e) => setSearch(e.target.value)}
+                                        placeholder="Buscar rutina..."
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {loading ? (
+                                        <p>Cargando rutinas...</p>
+                                    ) : filteredUserRoutines.length === 0 ? (
+                                        <p className="text-gray-500">Aún no tienes rutinas creadas</p>
+                                    ) : (
+                                        filteredUserRoutines.map(routine => (
+                                            <RoutineCard
+                                                key={routine.userRoutineId}
+                                                title={routine.name}
+                                                exercises={routine.exerciseList}
+                                                media={routine.media}
+                                                onClick={() => handleOpenModal(routine)}
+                                            />
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Rutinas certificadas */}
+                            <div>
+                                <h3 className="font-medium text-base mb-4">Rutinas certificadas</h3>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {loading ? (
+                                        <p>Cargando rutinas...</p>
+                                    ) : filteredBaseRoutines.length === 0 ? (
+                                        <p className="text-gray-500">No hay rutinas certificadas</p>
+                                    ) : (
+                                        filteredBaseRoutines.map(routine => (
+                                            <RoutineCard
+                                                key={routine.routineId}
+                                                title={routine.name}
+                                                exercises={routine.exerciseList}
+                                                certified={true}
+                                                media={routine.media}
+                                                onClick={() => handleOpenModal(routine)}
+                                            />
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                     )}
-                    {userRole === "ROLE_Trainer" && (
-                        <CreateRoutineEmpty setAlert={setAlert} refreshRoutines={refreshRoutines} />
+
+                    {/* Contenido de la segunda pestaña - Rendimiento del usuario */}
+                    {activeTab === "mi-rendimiento" && (
+                        <ProgressPages />
                     )}
-
-
-                    <SearchBar
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Buscar rutina..."
-                    />
-                </div>
-
-            </div>
-
-            {/* Rutinas de usuario */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
-                {loading ? (
-                    <p>Cargando rutinas...</p>
-                ) : filteredUserRoutines.length === 0 ? (
-                    <p>Aún no tienes rutinas creadas</p>
-                ) : (
-                    filteredUserRoutines.map(routine => (
-                        <RoutineCard
-                            key={routine.userRoutineId}
-                            title={routine.name}
-                            exercises={routine.exerciseList}
-                            media={routine.media}
-                            onClick={() => handleOpenModal(routine)}
-                        />
-                    ))
-                )}
-            </div>
-
-            {/* Rutinas certificadas */}
-            <h3 className="font-medium text-base mb-6 mt-10 px-4">Rutinas certificadas</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
-                {loading ? (
-                    <p>Cargando rutinas...</p>
-                ) : filteredBaseRoutines.length === 0 ? (
-                    <p>No hay rutinas certificadas</p>
-                ) : (
-                    filteredBaseRoutines.map(routine => (
-                        <RoutineCard
-                            key={routine.routineId}
-                            title={routine.name}
-                            exercises={routine.exerciseList}
-                            certified={true}
-                            media={routine.media}
-                            onClick={() => handleOpenModal(routine)}
-                        />
-                    ))
-                )}
+                </Tabs>
             </div>
 
             {isModalOpen && selectedRoutine && (

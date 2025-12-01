@@ -1,6 +1,3 @@
-import {useEffect} from "react";
-import {fetchRoutines} from "@/services/routineServices.js";
-
 const BASE_URL = 'http://localhost:8080/compu2-class/api/routine-exercises';
 
 // Obtener todos los routine-exercises

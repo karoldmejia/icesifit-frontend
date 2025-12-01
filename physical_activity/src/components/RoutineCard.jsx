@@ -1,7 +1,9 @@
+import React from "react";
+
 import Carousel from "./Carousel.jsx";
 import { User, Dumbbell } from "lucide-react";
 
-const RoutineCard = ({ title, exercises, media, onClick, certified = false }) => {
+const RoutineCard = ({ title, exercises, media, onClick}) => {
     const hasMedia = media && media.length > 0;
 
     return (

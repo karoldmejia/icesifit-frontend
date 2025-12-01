@@ -1,3 +1,5 @@
+import React from "react";
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,8 +8,6 @@ import { setUserData } from "../features/userSlice";
 import "../styles/auth.css";
 import FloatingInput from "../components/FloatingInput";
 import VerticalCarousel from "../components/VerticalCarousel";
-
-
 
 export default function Auth() {
 

@@ -1,3 +1,5 @@
+import React from "react";
+
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -7,7 +9,7 @@ export default function PublicRoute({ children }) {
     console.log(token);
     if (token) {
         // Si hay token, redirige a home
-        return <Navigate to="/home" replace />;
+        return <Navigate to="/routines" replace />;
     }
 
     // Si no hay token, muestra la página pública

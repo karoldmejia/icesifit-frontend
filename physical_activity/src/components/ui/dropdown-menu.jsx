@@ -3,6 +3,7 @@ import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
 import { Check, ChevronRight, Circle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import PropTypes from "prop-types";
 
 const DropdownMenu = DropdownMenuPrimitive.Root
 
@@ -153,4 +154,56 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
+}
+// SubTrigger
+DropdownMenuSubTrigger.propTypes = {
+    className: PropTypes.string,
+    inset: PropTypes.bool,
+    children: PropTypes.node.isRequired
+}
+
+// SubContent
+DropdownMenuSubContent.propTypes = {
+    className: PropTypes.string
+}
+
+// Content
+DropdownMenuContent.propTypes = {
+    className: PropTypes.string,
+    sideOffset: PropTypes.number
+}
+
+// Item
+DropdownMenuItem.propTypes = {
+    className: PropTypes.string,
+    inset: PropTypes.bool
+}
+
+// CheckboxItem
+DropdownMenuCheckboxItem.propTypes = {
+    className: PropTypes.string,
+    children: PropTypes.node.isRequired,
+    checked: PropTypes.bool
+}
+
+// RadioItem
+DropdownMenuRadioItem.propTypes = {
+    className: PropTypes.string,
+    children: PropTypes.node.isRequired
+}
+
+// Label
+DropdownMenuLabel.propTypes = {
+    className: PropTypes.string,
+    inset: PropTypes.bool
+}
+
+// Separator
+DropdownMenuSeparator.propTypes = {
+    className: PropTypes.string
+}
+
+// Shortcut
+DropdownMenuShortcut.propTypes = {
+    className: PropTypes.string
 }

@@ -1,14 +1,17 @@
+import React from "react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import WeeklyRoutineChartWithFilters from "@/components/Charts/WeeklyRoutineChartWithFilters";
 import { fetchProgressByRoutineExercise } from "@/services/progressServices";
-import {ProgressItem} from "@/components/ProgressItem.jsx";
+import { ProgressItem } from "@/components/ProgressItem.jsx";
 import IconButton from "@/components/IconButton.jsx";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import PropTypes from "prop-types";
 
 export default function ExerciseDetails({ exercise, onBack }) {
     const token = useSelector(state => state.user.token);
     const [progressData, setProgressData] = useState([]);
+    const [chartData, setChartData] = useState([]); // Datos específicos para el gráfico
 
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
@@ -25,18 +28,46 @@ export default function ExerciseDetails({ exercise, onBack }) {
             try {
                 const progress = await fetchProgressByRoutineExercise(exercise.id, token);
 
+                // Datos para la lista de progreso
                 const formatted = progress.map(p => ({
                     rawDate: p.progressDate,
-                    day: new Date(p.progressDate).toLocaleDateString("es-CO",{ day:"numeric", month:"short" }),
-                       count: p.setsCompleted,
-                       setsCompleted: p.setsCompleted,
-                       repsCompleted: p.repsCompleted || 0,
-                        timeCompleted: p.timeCompleted || 0
-            }));
-
+                    day: new Date(p.progressDate).toLocaleDateString("es-CO", { day: "numeric", month: "short" }),
+                    count: p.setsCompleted,
+                    setsCompleted: p.setsCompleted,
+                    repsCompleted: p.repsCompleted || 0,
+                    timeCompleted: p.timeCompleted || 0
+                }));
 
                 setProgressData(formatted);
-            } catch(err) {
+
+                // Datos específicos para el gráfico - agrupados por fecha
+                const groupedData = progress.reduce((acc, curr) => {
+                    const dateOnly = curr.progressDate.split('T')[0]; // YYYY-MM-DD
+
+                    if (!acc[dateOnly]) {
+                        acc[dateOnly] = {
+                            rawDate: dateOnly,
+                            setsCompleted: 0,
+                            repsCompleted: 0,
+                            timeCompleted: 0,
+                            exerciseCount: 1
+                        };
+                    }
+
+                    acc[dateOnly].setsCompleted += curr.setsCompleted || 0;
+                    acc[dateOnly].repsCompleted += curr.repsCompleted || 0;
+                    acc[dateOnly].timeCompleted += curr.timeCompleted || 0;
+
+                    return acc;
+                }, {});
+
+                const chartDataFormatted = Object.values(groupedData)
+                    .sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
+
+                console.log("Datos para gráfico en ExerciseDetails:", chartDataFormatted);
+                setChartData(chartDataFormatted);
+
+            } catch (err) {
                 console.error("Error cargando progreso ejercicio:", err);
             }
         }
@@ -67,13 +98,14 @@ export default function ExerciseDetails({ exercise, onBack }) {
 
             <h2 className="text-xl text-gray-900 font-medium">{exercise.name}</h2>
 
-            {progressData.length > 0 ? (
-                              <WeeklyRoutineChartWithFilters data={progressData}/>
+            {chartData.length > 0 ? (
+                <WeeklyRoutineChartWithFilters data={chartData}/>
             ) : (
                 <p className="text-gray-500 text-sm mt-4">
                     No hay registro de progreso todavía
                 </p>
             )}
+
             {progressData.length > 0 && (
                 <div className="mt-4 w-full">
 
@@ -110,7 +142,7 @@ export default function ExerciseDetails({ exercise, onBack }) {
                                     key={i}
                                     media={exercise.media}
                                     date={new Date(p.rawDate).toLocaleDateString("es-CO", {
-                                        day:"numeric", month:"short", year:"2-digit"
+                                        day: "numeric", month: "short", year: "2-digit"
                                     })}
                                     sets={p.setsCompleted}
                                     reps={p.repsCompleted}
@@ -129,3 +161,15 @@ export default function ExerciseDetails({ exercise, onBack }) {
         </div>
     );
 }
+
+ExerciseDetails.propTypes = {
+    exercise: PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+        media: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.arrayOf(PropTypes.object)
+        ])
+    }),
+    onBack: PropTypes.func.isRequired
+};

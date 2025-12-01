@@ -1,3 +1,4 @@
+import React from "react";
 import "../styles/carousel.css";
 
 export default function VerticalCarousel() {

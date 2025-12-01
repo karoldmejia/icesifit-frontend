@@ -1,5 +1,3 @@
-import {useSelector} from "react-redux";
-
 const BASE_URL = 'http://localhost:8080/compu2-class/api/exercises';
 
 // Obtener todos los ejercicios

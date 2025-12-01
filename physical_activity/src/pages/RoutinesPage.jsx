@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import SplitLayout from "../components/SplitLayout";
@@ -8,11 +9,12 @@ import { fetchRoutineExercisesByRoutine, fetchRoutineExercisesByUserRoutine, fet
 import RoutineExerciseList from "./RoutineExerciseList.jsx";
 import NotificationAlert from "@/components/NotificationAlert.jsx";
 import ExerciseDetails from "@/pages/ExerciseDetails.jsx";
+import PropTypes from "prop-types";
 
 export default function RoutinesPage({ routine, refreshRoutines, onDeleted }) {
     const token = useSelector(state => state.user.token);
     const [showLeft, setShowLeft] = useState(true);
-    const [mode, setMode] = useState("view");
+    const [mode, setMode] = useState("view"); // "view" | "edit" | "progress"
     const [selectedExercises, setSelectedExercises] = useState([]);
     const [alert, setAlert] = useState({ type: "", description: "", show: false });
     const [activeExercise, setActiveExercise] = useState(null);
@@ -55,13 +57,23 @@ export default function RoutinesPage({ routine, refreshRoutines, onDeleted }) {
         setMode("view");
     };
 
+    const handleSavedProgress = async (progressSummary) => {
+        await refreshRoutines();
+        setAlert({
+            type: "success",
+            description: `Progreso guardado: ${progressSummary.totalSets} series completadas`,
+            show: true
+        });
+        setMode("view");
+    };
+
     return (
         <>
             <SplitLayout
                 showLeft={showLeft}
                 left={
                     showLeft && (
-                        mode === "edit" ? (
+                        mode === "edit" || mode === "progress" ? (
                             <div className="bg-transparent w-full h-full flex items-center justify-center">
                                 <ExercisePicker
                                     selectedExercises={selectedExercises}
@@ -70,8 +82,9 @@ export default function RoutinesPage({ routine, refreshRoutines, onDeleted }) {
                                 />
                             </div>
                         ) : (
-                            <RoutineExerciseList exercises={selectedExercises}
-                                                 onSelectExercise={setActiveExercise}
+                            <RoutineExerciseList
+                                exercises={selectedExercises}
+                                onSelectExercise={setActiveExercise}
                             />
                         )
                     )
@@ -80,7 +93,7 @@ export default function RoutinesPage({ routine, refreshRoutines, onDeleted }) {
                     activeExercise ? (
                         <ExerciseDetails
                             exercise={activeExercise}
-                            onBack={() => setActiveExercise(null)} // vuelve al form o detalle
+                            onBack={() => setActiveExercise(null)}
                         />
                     ) : mode === "edit" ? (
                         <EditRoutineForm
@@ -89,6 +102,14 @@ export default function RoutinesPage({ routine, refreshRoutines, onDeleted }) {
                             selectedExercises={selectedExercises}
                             setSelectedExercises={setSelectedExercises}
                             onSaveSuccess={handleSavedRoutine}
+                            mode="edit"
+                        />
+                    ) : mode === "progress" ? (
+                        <EditRoutineForm
+                            routine={routine}
+                            userRoutineId={routine.userRoutineId}
+                            onSaveSuccess={handleSavedProgress}
+                            mode="progress"
                         />
                     ) : (
                         <RoutineDetails
@@ -96,6 +117,10 @@ export default function RoutinesPage({ routine, refreshRoutines, onDeleted }) {
                             userRoutineId={routine.userRoutineId}
                             onEdit={() => {
                                 setMode("edit");
+                                setShowLeft(true);
+                            }}
+                            onProgress={() => {
+                                setMode("progress");
                                 setShowLeft(true);
                             }}
                             onDeleted={onDeleted}
@@ -115,3 +140,13 @@ export default function RoutinesPage({ routine, refreshRoutines, onDeleted }) {
         </>
     );
 }
+
+RoutinesPage.propTypes = {
+    routine: PropTypes.shape({
+        userRoutineId: PropTypes.number,
+        routineId: PropTypes.number,
+        name: PropTypes.string,
+    }),
+    refreshRoutines: PropTypes.func,
+    onDeleted: PropTypes.func,
+};

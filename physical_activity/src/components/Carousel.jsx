@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect, useRef } from "react";
 
 const Carousel = ({ items, interval = 3000, width = "w-full", height = "h-48" }) => {

@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useMemo } from "react";
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
@@ -9,7 +10,12 @@ export default function WeeklyRoutineChartWithFilters({ data }) {
     const processedData = useMemo(() => {
         if (!data || data.length === 0) return [];
 
-        const sorted = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
+        // Crear un mapa de los datos por fecha para búsqueda rápida
+        const dataMap = {};
+        data.forEach(item => {
+            // Usar rawDate que es lo que viene de tus datos
+            dataMap[item.rawDate] = item;
+        });
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -19,22 +25,26 @@ export default function WeeklyRoutineChartWithFilters({ data }) {
             const d = new Date(today);
             d.setDate(today.getDate() - i);
 
+            // Formatear la fecha como YYYY-MM-DD para comparar con rawDate
+            const dateKey = d.toISOString().split('T')[0];
+
             const label = d.toLocaleDateString("es-CO", { day: "2-digit", month: "short" });
 
-            const found = sorted.find(item => {
-                const itemD = new Date(item.rawDate);
-                itemD.setHours(0, 0, 0, 0);
-                return itemD.getTime() === d.getTime();
-            });
+            // Buscar en el mapa por la clave de fecha
+            const found = dataMap[dateKey];
 
             last7.push({
                 day: label,
                 setsCompleted: found?.setsCompleted ?? 0,
                 repsCompleted: found?.repsCompleted ?? 0,
                 timeCompleted: found?.timeCompleted ?? 0,
+                // Para debugging
+                rawDate: dateKey,
+                hasData: !!found
             });
         }
 
+        console.log("Datos procesados para gráfico:", last7);
         return last7;
     }, [data]);
 
@@ -50,12 +60,11 @@ export default function WeeklyRoutineChartWithFilters({ data }) {
         <div className="w-full h-72 bg-transparent rounded-lg flex flex-col gap-2 overflow-visible">
 
             <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm mr-auto text-gray-400">
-                            Actividad semanal
-                        </span>
+                <span className="text-sm mr-auto text-gray-400">
+                    Actividad semanal
+                </span>
                 <MetricSelect metrics={metrics} metric={metric} setMetric={setMetric} />
             </div>
-
 
             <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={processedData}>

@@ -5,9 +5,8 @@
     justify-content: space-between; /* separa left y right */
     align-items: center; /* centra verticalmente */
     padding: 0 20px; /* espacio a los lados */
-    background-color: transparent;
-    box-shadow: 0 0.2px 0 var(--gris);
-    position: fixed; /* si quieres que siempre se quede arriba */
+    background-color: transparent !important;
+    position: fixed;
     top: 0;
     left: 0;
     z-index: 1000;

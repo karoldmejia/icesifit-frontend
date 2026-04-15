@@ -1,16 +1,41 @@
-# React + Vite
+## IcesiFit (frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React-based frontend for the physical activity system built for Universidad Icesi.
 
-Currently, two official plugins are available:
+<p align="center">
+  <img src="./gifs/demo_1.gif" width="100%" />
+</p>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+It provides an interactive and responsive interface for managing training routines, tracking progress, visualizing statistics, and interacting with real-time features such as notifications.
 
-## React Compiler
+The application is designed as a **mobile-first SPA**, focused on usability, performance, and smooth user experience across different roles (students, trainers, and administrators).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+It communicates with a Spring Boot backend through REST APIs and WebSockets, enabling real-time updates across the system.
 
-## Expanding the ESLint configuration
+#### Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Built with React, the application uses Redux Toolkit for state management and redux-persist for session persistence.
+
+Routing is handled with React Router v7, and styling is based on **TailwindCSS**, while real-time features are implemented using **SockJS + STOMP**, enabling live updates from the backend.
+
+---
+
+#### Key features
+
+The frontend supports role-based dashboards for users and trainers, dynamic routing based on authentication state, and real-time notifications.
+
+It includes interactive progress tracking, workout routine visualization, and analytics dashboards built with chart-based components.
+
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="./gifs/demo_2.gif" width="100%" />
+    </td>
+    <td width="50%">
+      <img src="./gifs/demo_3.gif" width="100%" />
+    </td>
+  </tr>
+</table>
+
+The architecture is modular, with reusable components and centralized state management using Redux Toolkit.

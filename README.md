@@ -18,7 +18,6 @@ Built with React, the application uses Redux Toolkit for state management and re
 
 Routing is handled with React Router, and styling is based on TailwindCSS, while real-time features are implemented using SockJS + STOMP, enabling live updates from the backend.
 
----
 
 #### Key features
 
@@ -26,16 +25,10 @@ The frontend supports role-based dashboards for users and trainers, dynamic rout
 
 It includes interactive progress tracking, workout routine visualization, and analytics dashboards built with chart-based components.
 
+<p align="center">
+  <img src="./gifs/demo_2.gif" width="100%" />
+  <img src="./gifs/demo_3.gif" width="100%" />
+</p>
 
-<table style="border:none; border-collapse:collapse;">
-  <tr>
-    <td style="border:none;" width="50%">
-      <img src="./gifs/demo_2.gif" width="100%" />
-    </td>
-    <td style="border:none;" width="50%">
-      <img src="./gifs/demo_3.gif" width="100%" />
-    </td>
-  </tr>
-</table>
 
 The architecture is modular, with reusable components and centralized state management using Redux Toolkit.

@@ -26,16 +26,9 @@ The frontend supports role-based dashboards for users and trainers, dynamic rout
 
 It includes interactive progress tracking, workout routine visualization, and analytics dashboards built with chart-based components.
 
-
-<table>
-  <tr>
-    <td width="50%">
-      <img src="./gifs/demo_2.gif" width="100%" />
-    </td>
-    <td width="50%">
-      <img src="./gifs/demo_3.gif" width="100%" />
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <img src="./gifs/demo_2.gif" width="50%" />
+  <img src="./gifs/demo_3.gif" width="50%" />
+</p>
 
 The architecture is modular, with reusable components and centralized state management using Redux Toolkit.
